@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  centrifugo:
+    image: centrifugo/centrifugo:v5.4
+    container_name: hub-centrifugo-test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./centrifugo-config:/centrifugo
+    command: centrifugo -c config.json
