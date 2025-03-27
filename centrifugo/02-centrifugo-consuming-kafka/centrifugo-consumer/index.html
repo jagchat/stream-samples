@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Centrifugo v5 Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/centrifuge@4.1.0/dist/centrifuge.min.js"></script>
+</head>
+
+<body>
+    <h1>Centrifugo v5 Test</h1>
+    <div id="status">Disconnected</div>
+    <div id="log" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-top: 10px;">
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += '<div>' + new Date().toISOString() + ': ' + message + '</div>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        try {
+            log('Initializing Centrifuge v4 client...');
+
+            const centrifuge = new Centrifuge('ws://localhost:8000/connection/websocket', {
+                debug: true
+            });
+
+            centrifuge.on('connecting', function (ctx) {
+                log('Connecting: ' + JSON.stringify(ctx));
+            });
+
+            centrifuge.on('connected', function (ctx) {
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('status').style.color = 'green';
+                log('Connected! Client ID: ' + ctx.client);
+
+                // Subscribe to channel after successful connection
+                log('Subscribing to channel chat...');
+                const subscription = centrifuge.newSubscription('chat:mychannel');
+
+                subscription.on('publication', function (ctx) {
+                    log('Received message: ' + JSON.stringify(ctx.data));
+                });
+
+                subscription.on('subscribed', function () {
+                    log('Successfully subscribed to channel');
+                });
+
+                subscription.on('error', function (ctx) {
+                    log('Subscription error: ' + JSON.stringify(ctx));
+                });
+
+                subscription.subscribe();
+            });
+
+            centrifuge.on('disconnected', function (ctx) {
+                document.getElementById('status').textContent = 'Disconnected';
+                document.getElementById('status').style.color = 'red';
+                log('Disconnected: ' + JSON.stringify(ctx));
+            });
+
+            centrifuge.on('error', function (ctx) {
+                log('Error: ' + JSON.stringify(ctx));
+            });
+
+            // Start connection
+            log('Connecting to Centrifugo...');
+            centrifuge.connect();
+
+        } catch (e) {
+            log('Exception: ' + e.message);
+        }
+    </script>
+</body>
+
+</html>

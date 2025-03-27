@@ -1,0 +1,71 @@
+{
+    "admin": {
+        "enabled": true,
+        "insecure": true
+    },
+    "http_api": {
+        "key": "api_secret_key",
+        "insecure": true
+    },
+    "client": {
+        "insecure": true,
+        "allowed_origins": [
+            "*"
+        ],
+        "token": {
+            "hmac_secret_key": "46b38493-147e-4e3f-86e0-dc5ec54f5133"
+        },
+        "allow_anonymous_connect_without_token": true,
+        "disallow_anonymous_connection_tokens": false
+    },
+    "consumers": [
+        {
+            "enabled": true,
+            "name": "kafka_consumer",
+            "type": "kafka",
+            "kafka": {
+                "brokers": [
+                    "kafka:9092"
+                ],
+                "consumer_group": "centrifugo-group",
+                "topics": [
+                    "centrifugo-messages"
+                ]
+            }
+        }
+    ],
+    "channel": {
+        "namespaces": [
+            {
+                "name": "chat",
+                "presence": true,
+                "history_size": 10,
+                "history_ttl": "300s",
+                "force_recovery": true,
+                "allow_subscribe_for_anonymous": true,
+                "allow_subscribe_for_client": true,
+                "allow_publish_for_anonymous": true,
+                "allow_publish_for_subscriber": true,
+                "allow_presence_for_anonymous": true,
+                "allow_presence_for_subscriber": true,
+                "allow_history_for_anonymous": true,
+                "allow_history_for_subscriber": true
+            }
+        ]
+    },
+    "engine": {
+        "type": "memory"
+    },
+    "log": {
+        "level": "trace"
+    },
+    "debug": {
+        "enabled": true
+    },
+    "health": {
+        "enabled": true
+    },
+    "swagger": {
+        "enabled": true
+    }
+}
